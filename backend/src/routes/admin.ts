@@ -1,11 +1,21 @@
 
 import { Router } from "express";
 import { body } from "express-validator";
-import { setupSuperAdmin } from "../controllers/adminController.js";
+
+import {
+    setupSuperAdmin,
+    getAdminStats,
+} from "../controllers/adminController.js";
+
 import { validate } from "../middleware/validate.js";
+import {
+    auth,
+    requireSuperAdmin,
+} from "../middleware/auth.js";
 
 const r = Router();
 
+// Initial Super Admin setup
 r.post(
     "/setup",
     validate([
@@ -15,5 +25,11 @@ r.post(
     ]),
     setupSuperAdmin
 );
+
+// All routes below require Super Admin authentication
+r.use(auth, requireSuperAdmin);
+
+// Global platform statistics
+r.get("/stats", getAdminStats);
 
 export default r;
