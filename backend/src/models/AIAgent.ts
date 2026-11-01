@@ -1,6 +1,6 @@
-import { Schema, model, Document, Types } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
-export interface IAIAgent extends Document {
+export interface IAIAgent {
     _id: Types.ObjectId;
     user: Types.ObjectId;
     name: string;
