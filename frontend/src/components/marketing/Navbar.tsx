@@ -1,3 +1,4 @@
+```tsx
 import { Link, NavLink } from "react-router-dom";
 import { Sparkles, Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -18,6 +19,8 @@ export function MarketingNavbar() {
     const [open, setOpen] = useState(false);
     const { user } = useAuth();
 
+    const appPath = user?.role === "superadmin" ? "/admin" : "/app";
+
     return (
         <header className="sticky top-0 z-40 border-b border-ink-100 bg-white/80 backdrop-blur dark:border-ink-800 dark:bg-ink-950/80">
             <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
@@ -27,6 +30,7 @@ export function MarketingNavbar() {
                     </div>
                     <span className="text-base font-semibold tracking-tight">NexaFlow</span>
                 </Link>
+
                 <nav className="ml-6 hidden items-center gap-1 md:flex">
                     {links.map((l) => (
                         <NavLink
@@ -45,9 +49,10 @@ export function MarketingNavbar() {
                         </NavLink>
                     ))}
                 </nav>
+
                 <div className="ml-auto flex items-center gap-2">
                     {user ? (
-                        <Button as={Link} to="/app" size="sm">
+                        <Button as={Link} to={appPath} size="sm">
                             Open app
                         </Button>
                     ) : (
@@ -60,6 +65,7 @@ export function MarketingNavbar() {
                             </Button>
                         </>
                     )}
+
                     <button
                         onClick={() => setOpen((o) => !o)}
                         className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-ink-700 hover:bg-ink-100 md:hidden dark:text-ink-200 dark:hover:bg-ink-800"
@@ -69,6 +75,7 @@ export function MarketingNavbar() {
                     </button>
                 </div>
             </div>
+
             <AnimatePresence>
                 {open && (
                     <motion.div
@@ -88,15 +95,32 @@ export function MarketingNavbar() {
                                     {l.label}
                                 </NavLink>
                             ))}
-                            {!user && (
+
+                            <div className="my-2 h-px bg-ink-100 dark:bg-ink-800" />
+
+                            {user ? (
+                                <NavLink
+                                    to={appPath}
+                                    onClick={() => setOpen(false)}
+                                    className="block rounded-lg px-3 py-2 text-sm font-medium text-ink-700 hover:bg-ink-50 dark:text-ink-200 dark:hover:bg-ink-800"
+                                >
+                                    Open app
+                                </NavLink>
+                            ) : (
                                 <>
-                                    <div className="my-2 h-px bg-ink-100 dark:bg-ink-800" />
                                     <NavLink
                                         to="/login"
                                         onClick={() => setOpen(false)}
                                         className="block rounded-lg px-3 py-2 text-sm font-medium text-ink-700 hover:bg-ink-50 dark:text-ink-200 dark:hover:bg-ink-800"
                                     >
                                         Log in
+                                    </NavLink>
+                                    <NavLink
+                                        to="/register"
+                                        onClick={() => setOpen(false)}
+                                        className="block rounded-lg px-3 py-2 text-sm font-medium text-ink-700 hover:bg-ink-50 dark:text-ink-200 dark:hover:bg-ink-800"
+                                    >
+                                        Start for free
                                     </NavLink>
                                 </>
                             )}
@@ -107,3 +131,4 @@ export function MarketingNavbar() {
         </header>
     );
 }
+```
