@@ -4,7 +4,9 @@ export type User = {
     email: string;
     avatar?: string;
     workspace: string;
+    role: "user" | "superadmin";
 };
+
 
 export type WorkflowStatus = "active" | "paused" | "draft";
 export type WorkflowStepType = "trigger" | "ai" | "action" | "decision";
