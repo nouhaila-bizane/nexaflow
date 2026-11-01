@@ -1,3 +1,4 @@
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
 import { MarketingLayout } from "./components/layout/MarketingLayout";
@@ -19,6 +20,7 @@ import Changelog from "./pages/marketing/Changelog";
 import Guides from "./pages/marketing/Guides";
 import ApiReference from "./pages/marketing/ApiReference";
 import Press from "./pages/marketing/Press";
+
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
@@ -32,28 +34,56 @@ import Team from "./pages/dashboard/Team";
 import Settings from "./pages/dashboard/Settings";
 import Inbox from "./pages/dashboard/Inbox";
 
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
+
+function LoadingScreen() {
+    return (
+        <div className="flex min-h-screen items-center justify-center bg-ink-50 dark:bg-ink-950">
+            <div className="w-64 space-y-3">
+                <Skeleton className="h-8 w-32" />
+                <Skeleton className="h-48 w-full" />
+            </div>
+        </div>
+    );
+}
 
 function Protected({ children }: { children: React.ReactNode }) {
     const { user, loading } = useAuth();
-    if (loading) {
-        return (
-            <div className="flex min-h-screen items-center justify-center bg-ink-50 dark:bg-ink-950">
-                <div className="w-64 space-y-3">
-                    <Skeleton className="h-8 w-32" />
-                    <Skeleton className="h-48 w-full" />
-                </div>
-            </div>
-        );
-    }
+
+    if (loading) return <LoadingScreen />;
     if (!user) return <Navigate to="/login" replace />;
+
+    return <>{children}</>;
+}
+
+function SuperAdminProtected({ children }: { children: React.ReactNode }) {
+    const { user, loading } = useAuth();
+
+    if (loading) return <LoadingScreen />;
+    if (!user) return <Navigate to="/login" replace />;
+
+    if (user.role !== "superadmin") {
+        return <Navigate to="/app" replace />;
+    }
+
     return <>{children}</>;
 }
 
 function PublicOnly({ children }: { children: React.ReactNode }) {
     const { user, loading } = useAuth();
+
     if (loading) return null;
-    if (user) return <Navigate to="/app" replace />;
+
+    if (user) {
+        return (
+            <Navigate
+                to={user.role === "superadmin" ? "/admin" : "/app"}
+                replace
+            />
+        );
+    }
+
     return <>{children}</>;
 }
 
@@ -80,6 +110,15 @@ export default function App() {
 
             <Route path="login" element={<PublicOnly><Login /></PublicOnly>} />
             <Route path="register" element={<PublicOnly><Register /></PublicOnly>} />
+
+            <Route
+                path="admin"
+                element={
+                    <SuperAdminProtected>
+                        <AdminDashboard />
+                    </SuperAdminProtected>
+                }
+            />
 
             <Route path="app" element={<Protected><DashboardLayout /></Protected>}>
                 <Route index element={<Overview />} />
