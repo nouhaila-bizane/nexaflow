@@ -1,3 +1,4 @@
+
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { api } from "@/lib/api";
@@ -20,14 +21,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const refresh = useCallback(async () => {
         const token = localStorage.getItem("nf_token");
+
         if (!token) {
             setUser(null);
             setLoading(false);
             return;
         }
+
         try {
-            const { user } = await api.get<{ user: User }>("/auth/me");
-            setUser(user);
+            // /auth/me returns the user directly, not { user: ... }.
+            const currentUser = await api.get<User>("/auth/me");
+            setUser(currentUser);
         } catch {
             localStorage.removeItem("nf_token");
             setUser(null);
@@ -41,20 +45,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [refresh]);
 
     const login = async (email: string, password: string) => {
-        const { token, user } = await api.post<{ token: string; user: User }>("/auth/login", {
-            email,
-            password,
-        });
+        const { token, user } = await api.post<{
+            token: string;
+            user: User;
+        }>("/auth/login", { email, password });
+
         localStorage.setItem("nf_token", token);
         setUser(user);
     };
 
     const register = async (name: string, email: string, password: string) => {
-        const { token, user } = await api.post<{ token: string; user: User }>("/auth/register", {
-            name,
-            email,
-            password,
-        });
+        const { token, user } = await api.post<{
+            token: string;
+            user: User;
+        }>("/auth/register", { name, email, password });
+
         localStorage.setItem("nf_token", token);
         setUser(user);
     };
@@ -69,5 +74,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         [user, loading, refresh]
     );
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
 }
