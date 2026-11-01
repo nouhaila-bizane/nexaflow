@@ -1,3 +1,4 @@
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -12,11 +13,13 @@ import agentRoutes from "./routes/agents.js";
 import analyticsRoutes from "./routes/analytics.js";
 import integrationRoutes from "./routes/integrations.js";
 import teamRoutes from "./routes/team.js";
+import adminRoutes from "./routes/admin.js";
 
 async function main() {
     await connectDB();
 
     const app = express();
+
     app.use(helmet());
     app.use(
         cors({
@@ -24,6 +27,7 @@ async function main() {
             credentials: true,
         })
     );
+
     app.use(express.json({ limit: "1mb" }));
     app.use(morgan(env.nodeEnv === "production" ? "combined" : "dev"));
 
@@ -35,12 +39,13 @@ async function main() {
     app.use("/api/analytics", analyticsRoutes);
     app.use("/api/integrations", integrationRoutes);
     app.use("/api/team", teamRoutes);
+    app.use("/api/admin", adminRoutes);
 
     app.use(notFound);
     app.use(errorHandler);
 
     app.listen(env.port, () => {
-        console.log(`🚀 NexaFlow API listening on http://localhost:${env.port}`);
+        console.log(`🚀 NexaFlow API listening on port ${env.port}`);
     });
 }
 
