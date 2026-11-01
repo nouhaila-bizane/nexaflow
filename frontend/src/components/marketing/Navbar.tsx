@@ -1,4 +1,4 @@
-```tsx
+
 import { Link, NavLink } from "react-router-dom";
 import { Sparkles, Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -131,4 +131,3 @@ export function MarketingNavbar() {
         </header>
     );
 }
-```
