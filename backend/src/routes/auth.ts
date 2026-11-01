@@ -1,3 +1,4 @@
+
 import { Router } from "express";
 import { body } from "express-validator";
 import { register, login, me } from "../controllers/authController.js";
@@ -6,6 +7,7 @@ import { auth } from "../middleware/auth.js";
 
 const r = Router();
 
+// Public registration: all new accounts receive the default "user" role.
 r.post(
     "/register",
     validate([
@@ -16,6 +18,7 @@ r.post(
     register
 );
 
+// User login
 r.post(
     "/login",
     validate([
@@ -25,6 +28,7 @@ r.post(
     login
 );
 
+// Get the currently authenticated user
 r.get("/me", auth, me);
 
 export default r;
